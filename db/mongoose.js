@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const connectionUrl = "mongodb://127.0.0.1:27017/shop";
+const connectionUrl = "mongodb://127.0.0.1:27017/shop" || process.env.MONGODB;
 import Role from "../model/role.js";
 
 const createDefaultRoles = async () => {
