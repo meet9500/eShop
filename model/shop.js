@@ -25,5 +25,7 @@ const shopScheema = new mongoose.Schema(
   { timestamps: true }
 );
 
+shopScheema.index({ location: "2dsphere" });
+
 const Shop = mongoose.model("Shop", shopScheema);
 export default Shop;

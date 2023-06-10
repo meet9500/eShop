@@ -1,6 +1,5 @@
 import express from "express";
 import ApiRoutes from "./router/index.js";
-// const apiRoutes = require("./router/userRouter");
 import "./db/mongoose.js";
 
 const port = process.env.PORT || 3000;

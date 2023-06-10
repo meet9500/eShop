@@ -1,11 +1,10 @@
 import Shop from "../../model/shop.js";
 import Product from "../../model/product.js";
-import mongoose from "mongoose";
 
 export const registerProduct = async (req, res) => {
   try {
     const { shopId } = req.params;
-    const { name, price, quantity } = req.body;
+    const { name, price, quantity, location } = req.body;
 
     let isShopExist = await Shop.findOne({
       where: { _id: shopId },
@@ -20,6 +19,10 @@ export const registerProduct = async (req, res) => {
       quantity,
       shopId: shopId,
       userId: req.userId,
+      location: {
+        type: location.type,
+        coordinates: location.coordinates,
+      },
     });
     await product.save();
 
@@ -31,28 +34,28 @@ export const registerProduct = async (req, res) => {
   }
 };
 
-export const editProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   try {
-    const { shopId } = req.params;
-    const { name, location } = req.body;
+    const { productId } = req.params;
 
-    const shop = await Shop.findById(shopId);
-    if (!shop) {
-      return res.status(404).json({ error: "Shop not found" });
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: "product not found" });
     }
 
-    if (shop.userId.toString() !== req.userId) {
+    if (product.userId.toString() !== req.userId) {
       return res.status(403).json({ error: "Access denied" });
     }
 
-    shop.name = name;
-    shop.location = location;
+    const updatedProduct = await Product.updateOne(
+      { _id: productId },
+      req.body
+    );
 
-    await shop.save();
-    console.log("Shop updated:", shop);
+    console.log("updated Product:", updatedProduct);
 
     res.status(200).json({
-      shop,
+      updatedProduct,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -61,41 +64,20 @@ export const editProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const { shopId } = req.params;
+    const { productId } = req.params;
 
-    const shop = await Shop.findById(shopId);
-    if (!shop) {
-      return res.status(404).json({ error: "Shop not found" });
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: "product not found" });
     }
 
-    if (shop.userId.toString() !== req.userId) {
+    if (product.userId.toString() !== req.userId) {
       return res.status(403).json({ error: "Access denied" });
     }
 
-    await Shop.findByIdAndDelete(shopId);
+    await Product.findByIdAndDelete(productId);
 
-    res.status(200).json({ message: "Shop deleted successfully" });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
-
-export const listProduct = async (req, res) => {
-  try {
-    const { shopId } = req.params;
-
-    const shop = await Shop.findById(shopId);
-    if (!shop) {
-      return res.status(404).json({ error: "Shop not found" });
-    }
-
-    if (shop.userId.toString() !== req.userId) {
-      return res.status(403).json({ error: "Access denied" });
-    }
-
-    await Shop.findByIdAndDelete(shopId);
-
-    res.status(200).json({ message: "Shop deleted successfully" });
+    res.status(200).json({ message: "product deleted successfully" });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
