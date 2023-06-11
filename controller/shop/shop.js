@@ -34,7 +34,10 @@ export const updateShop = async (req, res) => {
       return res.status(403).json({ error: "Access denied" });
     }
 
-    const updatedShop = User.updateOne({ _id: shopId }, { $set: req.body });
+    const updatedShop = await Shop.updateOne(
+      { _id: shopId },
+      { $set: req.body }
+    );
 
     console.log("Shop updated:", updatedShop);
 
