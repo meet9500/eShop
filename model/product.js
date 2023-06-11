@@ -37,5 +37,7 @@ const productScheema = new mongoose.Schema(
   { timestamps: true }
 );
 
+productScheema.index({ location: "2dsphere" });
+
 const Product = mongoose.model("Product", productScheema);
 export default Product;
